@@ -1,13 +1,27 @@
-FROM java:8 
-
-# Install maven
-RUN apt-get update  
-RUN apt-get install -y maven
+# Use official base image of Java Runtim
+FROM openjdk:8-jdk-alpine
 
 # Adding springboot-elk app to container
 ADD . /usr/config-client  
 WORKDIR /usr/config-client
-RUN ["mvn", "package"]
 
-EXPOSE 8080 
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/springboot-elk-0.0.1-SNAPSHOT.jar"]
+# Set volume point to /tmp
+VOLUME /tmp
+
+# Make port 8080 available to the world outside container
+EXPOSE 8080
+
+# Set application's JAR file
+ARG JAR_FILE=target/springboot-elk-0.0.1-SNAPSHOT.jar
+
+# Add the application's JAR file to the container
+ADD ${JAR_FILE} app.jar
+
+# Run the JAR file
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+
+
+
+
+
+
